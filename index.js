@@ -9,13 +9,11 @@ require('dotenv').config();
 app.use(cors());
 app.use(express.json());
 
-console.log(process.env.DB_DENTAL);
-console.log(process.env.DB_PASSWORD);
 
 
 // const uri = 'mongodb://localhost:27017';
 const uri = `mongodb+srv://${process.env.DB_DENTAL}:${process.env.DB_PASSWORD}@cluster0.eveocjd.mongodb.net/?retryWrites=true&w=majority`;
-console.log(uri);
+
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 async function run(){
@@ -73,7 +71,6 @@ app.post('/services', async (req, res) => {
         }
         const cursor = reviewCollection.find(query).sort({$natural: -1});
         const reviews = await cursor.toArray();
-        console.log(reviews)
         res.send(reviews);
     });
 
@@ -83,11 +80,20 @@ app.post('/services', async (req, res) => {
         if(req.query.service){
             query = { service: req.query.service }
         }
-        console.log(query);
         const cursor = reviewCollection.find(query).sort({$natural: -1});
         const reviews = await cursor.toArray();
         res.send(reviews);
     });
+
+    // delete a review 
+    app.delete('/reviews/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) };
+        console.log(query);
+        const result = await reviewCollection.deleteOne(query);
+        console.log(result);
+        res.send(result);
+    })
 
 
 } 
