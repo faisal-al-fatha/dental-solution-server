@@ -30,12 +30,26 @@ try {
         res.send(services);
     });
 
+    app.get('/services/3', async(req,res)=>{
+        const query = {};
+        const cursor = serviceCollection.find(query).sort({$natural: -1});
+        const services = await cursor.limit(3).toArray();
+        res.send(services);
+    });
+
     app.get('/services/:id', async (req, res) => {
         const id = req.params.id;
         const query = { _id: ObjectId(id) };
         const service = await serviceCollection.findOne(query);
         res.send(service);
     });
+// service post api 
+app.post('/services', async (req, res) => {
+    const service = req.body;
+    const result = await  serviceCollection.insertOne(service);
+    res.send(result);
+});
+
 
     // reviews apis  here 
     // review post api 
@@ -45,7 +59,7 @@ try {
         res.send(result);
     });
 
-    
+
     // review get api for specific user
     app.get('/reviews', async (req, res) => {
         let query = {};
@@ -54,7 +68,7 @@ try {
                 email: req.query.email
             }
         }
-        const cursor = reviewCollection.find(query);
+        const cursor = reviewCollection.find(query).sort({$natural: -1});
         const reviews = await cursor.toArray();
         res.send(reviews);
     });
