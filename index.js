@@ -43,6 +43,9 @@ try {
         const service = await serviceCollection.findOne(query);
         res.send(service);
     });
+
+    // demo 
+   
 // service post api 
 app.post('/services', async (req, res) => {
     const service = req.body;
@@ -68,6 +71,19 @@ app.post('/services', async (req, res) => {
                 email: req.query.email
             }
         }
+        const cursor = reviewCollection.find(query).sort({$natural: -1});
+        const reviews = await cursor.toArray();
+        console.log(reviews)
+        res.send(reviews);
+    });
+
+    // review get api for specific service 
+    app.get('/reviews/service', async (req, res) => {
+        let query = {};
+        if(req.query.service){
+            query = { service: req.query.service }
+        }
+        console.log(query);
         const cursor = reviewCollection.find(query).sort({$natural: -1});
         const reviews = await cursor.toArray();
         res.send(reviews);
