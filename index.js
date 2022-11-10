@@ -42,7 +42,13 @@ try {
         res.send(service);
     });
 
-    // demo 
+    app.get('/review/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) };
+        const review = await reviewCollection.findOne(query);
+        res.send(review);
+    });
+
    
 // service post api 
 app.post('/services', async (req, res) => {
@@ -84,6 +90,21 @@ app.post('/services', async (req, res) => {
         const reviews = await cursor.toArray();
         res.send(reviews);
     });
+
+    // update review api 
+    app.put('/review/:id', async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: ObjectId(id) };
+        const review = req.body;
+        const updatedReview = {
+            $set: {
+                ratings: review.ratings,
+                message: review.message
+            }
+        }
+        const result = await  reviewCollection.updateOne(filter, updatedReview);
+        res.send(result);
+    })
 
     // delete a review 
     app.delete('/reviews/:id', async (req, res) => {
